@@ -24,8 +24,8 @@ const view = (() => {
     const entriesForm = document.querySelector('.entries-form');
 
     return {
-        render(htmlString){
-            entriesDisplay.insertAdjacentHTML('beforeend', htmlString)
+        render(target, htmlString){
+            target.insertAdjacentHTML('beforeend', htmlString)
         },
         hideEntriesDisplay(){
             entriesDisplay.style.display = "none";
@@ -58,7 +58,15 @@ const controller = (() => {
             const index = entryHtml.dataset.index;
             return model.entries[index] //returns object
         },
-        
+        makeFormHtml(entryObject){
+            // TODO make data-index
+            htmlString = `<form>
+                             <textarea data-index = 0 name="entry-text" id="" cols="10" rows="40">${entryObject.text}</textarea>
+                             <button type="submit">Submit</button>
+                         </form>`
+            return htmlString
+        }
+
     }
 })()
     
