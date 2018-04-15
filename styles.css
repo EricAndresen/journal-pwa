@@ -26,6 +26,7 @@ header {
     max-width: 500px;
     margin: 0 auto;
     padding: 10px;
+    display: none;
 }
 
 textarea {

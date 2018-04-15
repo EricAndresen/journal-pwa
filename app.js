@@ -27,18 +27,12 @@ const view = (() => {
         render(target, htmlString){
             target.insertAdjacentHTML('beforeend', htmlString)
         },
-        hideEntriesDisplay(){
-            entriesDisplay.style.display = "none";
+        hide(element){
+            element.style.display = "none"
         },
-        hideEntriesForm(){
-            entriesForm.style.display = "none";
-        },
-        showEntriesDisplay(){
-            entriesDisplay.style.display = "block";
-        },
-        showEntriesForm(){
-            entriesForm.style.display = "block";
-        }
+        show(element){
+            element.style.display = "block"
+        }   
     }
 })()
 
@@ -65,8 +59,36 @@ const controller = (() => {
                              <button type="submit">Submit</button>
                          </form>`
             return htmlString
+        },
+        addEntry(obj){
+            model.entries.push(obj);
         }
-
     }
 })()
     
+
+
+// LOGIC
+
+// initialize
+const entriesDisplay = document.querySelector('.entries-display');
+const entriesForm = document.querySelector('.entries-form');
+const fab = document.querySelector('.fab');
+
+
+
+for (let e of model.entries){
+    const entryHtml = controller.makeEntryHtml(e);
+    view.render(entriesDisplay, entryHtml);
+}
+
+
+fab.addEventListener('click', () => {
+    view.hide(entriesDisplay);
+    view.show(entriesForm);
+    // TODO only render once on init
+    const formHtml = controller.makeFormHtml({});
+    view.render(entriesForm, formHtml);
+});
+
+
