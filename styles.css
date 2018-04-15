@@ -13,7 +13,24 @@ header {
     color: white;
 }
 
+/* make shadow class */
+
 .entries-display{
     max-width: 500px;
-    margin: auto;
+    margin: 20px auto;
+    padding: 10px;
+}
+
+.fab{
+    position: absolute;
+    bottom:5%;
+    right: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: indigo;
+    color: white;
+    border-radius: 100%;
+    width: 60px;
+    height: 60px;
 }
