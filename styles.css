@@ -1,0 +1,19 @@
+body{
+    margin:0;
+    /* TODO update this to a google font */
+    font-family: sans-serif;
+}
+
+header {
+    height: 75px;
+    background: indigo;
+    display: flex;
+    align-items: center;
+    padding: 0 30px ;
+    color: white;
+}
+
+.entries-display{
+    max-width: 500px;
+    margin: auto;
+}
