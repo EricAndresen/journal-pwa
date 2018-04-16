@@ -82,13 +82,31 @@ for (let e of model.entries){
     view.render(entriesDisplay, entryHtml);
 }
 
+view.render(entriesForm, controller.makeFormHtml({}));
+
+const form = document.querySelector('form');
+
+form.addEventListener('submit', event => {
+    const data = {
+        date: Date.now(),
+        text: event.target[0].value
+    }
+    controller.addEntry(data);
+    view.render(entriesDisplay, controller.makeEntryHtml(data));
+    event.preventDefault();
+
+    view.show(entriesDisplay);
+    view.show(fab);
+    view.hide(entriesForm);
+})
+
 
 fab.addEventListener('click', () => {
     view.hide(entriesDisplay);
+    view.hide(fab);
     view.show(entriesForm);
-    // TODO only render once on init
-    const formHtml = controller.makeFormHtml({});
-    view.render(entriesForm, formHtml);
 });
+
+
 
 

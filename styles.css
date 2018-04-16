@@ -2,7 +2,7 @@ body{
     margin:0;
     /* TODO update this to a google font */
     font-family: sans-serif;
-    height: 100vh;
+    height: 100%;
 }
 
 header {
@@ -35,7 +35,7 @@ textarea {
 }
 
 .fab{
-    position: absolute;
+    position: fixed;
     bottom:5%;
     right: 5%;
     display: flex;
