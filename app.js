@@ -1,3 +1,17 @@
+// TODO: Add Back button to form entry (how to handle routing?)
+// TODO: Abstract view / show pages into single functions (e.g. showEntries, showForm)
+// TODO: cardview for each entry
+// TODO: render date into readable format
+// TODO: when article is clicked show full entry with edit button
+// TODO: when edit button is clicked open in form
+// TODO: External Database
+// TODO: NLP (tab on top)
+// BUG: view.show makes fab render incorrectly (uses flex)
+
+// BUG: "undefined" shows when no object is passed to form
+
+
+
 const model = {
     entries : [
         { 
@@ -24,8 +38,8 @@ const view = (() => {
     const entriesForm = document.querySelector('.entries-form');
 
     return {
-        render(target, htmlString){
-            target.insertAdjacentHTML('beforeend', htmlString)
+        render(htmlString, targetDiv){
+            targetDiv.insertAdjacentHTML('beforeend', htmlString)
         },
         hide(element){
             element.style.display = "none"
@@ -55,7 +69,7 @@ const controller = (() => {
         makeFormHtml(entryObject){
             // TODO make data-index
             htmlString = `<form>
-                             <textarea data-index = 0 name="entry-text" id="" cols="10" rows="40">${entryObject.text}</textarea>
+                             <textarea data-index = 0 name="entry-text" id="" cols="10" rows="40">${entryObject.text || ''}</textarea>
                              <button type="submit">Submit</button>
                          </form>`
             return htmlString
@@ -76,13 +90,13 @@ const entriesForm = document.querySelector('.entries-form');
 const fab = document.querySelector('.fab');
 
 
-
+// render each entry in order
 for (let e of model.entries){
     const entryHtml = controller.makeEntryHtml(e);
-    view.render(entriesDisplay, entryHtml);
+    view.render(entryHtml, entriesDisplay);
 }
 
-view.render(entriesForm, controller.makeFormHtml({}));
+view.render(controller.makeFormHtml({}), entriesForm);
 
 const form = document.querySelector('form');
 
@@ -92,7 +106,7 @@ form.addEventListener('submit', event => {
         text: event.target[0].value
     }
     controller.addEntry(data);
-    view.render(entriesDisplay, controller.makeEntryHtml(data));
+    view.render(controller.makeEntryHtml(data), entriesDisplay);
     event.preventDefault();
 
     view.show(entriesDisplay);
