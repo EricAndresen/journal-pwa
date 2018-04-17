@@ -3,13 +3,12 @@
 
 // Goal?: have no elements in main body
     // pull initiatization into view.init
-// BUG?: Form data doesn't clear?
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: cardview for each entry
-// TODO: render date into readable format
 // TODO: when article is clicked show full entry with edit button
 // TODO: when edit button is clicked open in form
 // TODO: External Database
+// TODO: add markdown support for entries
 // TODO: NLP (tab on top)
 // TODO: test with very large numbers of entries (page reflow performance issues?)
 
@@ -72,12 +71,17 @@ const view = (() => {
 })()
 
 const controller = (() => {
+
+    function renderDate(dateInMs){
+        return new Date(dateInMs).toDateString(); 
+    }
+
     return{
         makeEntryHtml(entryObject){
             // TODO add parseDate function
             // TODO make data-index dynamic
             htmlString = `<div data-index = 0 class="entry">
-                             <p class="date">${entryObject.date}</p>
+                             <p class="date">${renderDate(entryObject.date)}</p>
                              <p class="text">${entryObject.text}</p>
                           </div>`
             return htmlString
