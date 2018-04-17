@@ -1,4 +1,6 @@
 // TODO: Add Back button to form entry (how to handle routing?)
+// TODO: Make Name a link to the home page
+// BUG?: Form data doesn't clear?
 // TODO: Abstract view / show pages into single functions (e.g. showEntries, showForm)
 // TODO: cardview for each entry
 // TODO: render date into readable format
@@ -7,9 +9,6 @@
 // TODO: External Database
 // TODO: NLP (tab on top)
 // BUG: view.show makes fab render incorrectly (uses flex)
-
-// BUG: "undefined" shows when no object is passed to form
-
 
 
 const model = {
@@ -85,10 +84,14 @@ const controller = (() => {
 // LOGIC
 
 // initialize
+// get elements
 const entriesDisplay = document.querySelector('.entries-display');
 const entriesForm = document.querySelector('.entries-form');
 const fab = document.querySelector('.fab');
+const logo = document.querySelector('.logo');
+const form = document.querySelector('form');
 
+// initialize entry page
 
 // render each entry in order
 for (let e of model.entries){
@@ -96,10 +99,17 @@ for (let e of model.entries){
     view.render(entryHtml, entriesDisplay);
 }
 
+// on fab click hide entries and display form
+fab.addEventListener('click', () => {
+    view.hide(entriesDisplay);
+    view.hide(fab);
+    view.show(entriesForm);
+});
+
+// render form (do this here so only have to do it once)
 view.render(controller.makeFormHtml({}), entriesForm);
 
-const form = document.querySelector('form');
-
+// on submit add entry and display entries pages 
 form.addEventListener('submit', event => {
     const data = {
         date: Date.now(),
@@ -115,11 +125,7 @@ form.addEventListener('submit', event => {
 })
 
 
-fab.addEventListener('click', () => {
-    view.hide(entriesDisplay);
-    view.hide(fab);
-    view.show(entriesForm);
-});
+
 
 
 
