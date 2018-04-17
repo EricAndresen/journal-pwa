@@ -1,16 +1,16 @@
-// BUG: view.show makes fab render incorrectly (uses flex)
-
-
 // Goal?: have no elements in main body
     // pull initiatization into view.init
-// TODO: Add Back button to form entry (how to handle routing?)
+    
 // TODO: cardview for each entry
 // TODO: when article is clicked show full entry with edit button
+// TODO: Add Back button to form entry (how to handle routing?)
 // TODO: when edit button is clicked open in form
 // TODO: External Database
 // TODO: add markdown support for entries
 // TODO: NLP (tab on top)
+// TODO: Add service worker to make PWA / cache entries
 // TODO: test with very large numbers of entries (page reflow performance issues?)
+// TODO: add material icon to fab
 
 
 const model = {
@@ -42,8 +42,8 @@ const view = (() => {
         element.style.display = "none";
     }
 
-    function show(element){
-        element.style.display = "block";
+    function show(element, method = "block"){
+        element.style.display = method;
     }
 
     return {
@@ -52,7 +52,7 @@ const view = (() => {
         },
         showEntries(){
             show(entriesDisplay);
-            show(fab);
+            show(fab, method = "flex");
             // need to decouple this more
             this.hideForm();            
         },
