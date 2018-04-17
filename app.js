@@ -75,6 +75,7 @@ const controller = (() => {
         },
         addEntry(obj){
             model.entries.push(obj);
+            view.render(controller.makeEntryHtml(data), entriesDisplay);
         }
     }
 })()
@@ -116,7 +117,6 @@ form.addEventListener('submit', event => {
         text: event.target[0].value
     }
     controller.addEntry(data);
-    view.render(controller.makeEntryHtml(data), entriesDisplay);
     event.preventDefault();
 
     view.show(entriesDisplay);
