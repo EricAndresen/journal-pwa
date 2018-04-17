@@ -1,17 +1,17 @@
-// TODO: Add Back button to form entry (how to handle routing?)
+// BUG: view.show makes fab render incorrectly (uses flex)
+
 
 // Goal?: have no elements in main body
     // pull initiatization into view.init
-
 // BUG?: Form data doesn't clear?
+// TODO: Add Back button to form entry (how to handle routing?)
 // TODO: cardview for each entry
 // TODO: render date into readable format
 // TODO: when article is clicked show full entry with edit button
 // TODO: when edit button is clicked open in form
 // TODO: External Database
 // TODO: NLP (tab on top)
-// TODO: test with very large numbers of entries
-// BUG: view.show makes fab render incorrectly (uses flex)
+// TODO: test with very large numbers of entries (page reflow performance issues?)
 
 
 const model = {
@@ -133,13 +133,14 @@ view.render(controller.makeFormHtml({}), entriesForm);
 const form = document.querySelector('form');
 
 
-// on submit add entry and display entries pages 
+// on submit add entry, reset form, and display entries pages 
 form.addEventListener('submit', event => {
     const data = {
         date: Date.now(),
         text: event.target[0].value
     }
     controller.addEntry(data);
+    event.target[0].value = '';
     event.preventDefault();
     view.showEntries();
 })
