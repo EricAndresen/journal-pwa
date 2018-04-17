@@ -1,7 +1,10 @@
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: Make Name a link to the home page
+
+// Goal?: have no elements in main body
+    // pull initiatization into view.init
+
 // BUG?: Form data doesn't clear?
-// TODO: Abstract view / show pages into single functions (e.g. showEntries, showForm)
 // TODO: cardview for each entry
 // TODO: render date into readable format
 // TODO: when article is clicked show full entry with edit button
@@ -36,15 +39,34 @@ const view = (() => {
     const entriesDisplay = document.querySelector('.entries-display');
     const entriesForm = document.querySelector('.entries-form');
 
+    function hide(element){
+        element.style.display = "none";
+    }
+
+    function show(element){
+        element.style.display = "block";
+    }
+
     return {
         render(htmlString, targetDiv){
             targetDiv.insertAdjacentHTML('beforeend', htmlString)
         },
-        hide(element){
-            element.style.display = "none"
+        showEntries(){
+            show(entriesDisplay);
+            show(fab);
+            // need to decouple this more
+            this.hideForm();            
         },
-        show(element){
-            element.style.display = "block"
+        hideEntries(){
+            hide(entriesDisplay);
+            hide(fab);
+        },
+        showForm(){
+            show(entriesForm);  
+            this.hideEntries();
+        },   
+        hideForm(){
+            hide(entriesForm);  
         }   
     }
 })()
@@ -66,7 +88,7 @@ const controller = (() => {
             return model.entries[index] //returns object
         },
         makeFormHtml(entryObject){
-            // TODO make data-index
+            // TODO make data-index dynamic
             htmlString = `<form>
                              <textarea data-index = 0 name="entry-text" id="" cols="10" rows="40">${entryObject.text || ''}</textarea>
                              <button type="submit">Submit</button>
@@ -75,14 +97,11 @@ const controller = (() => {
         },
         addEntry(obj){
             model.entries.push(obj);
-            view.render(controller.makeEntryHtml(data), entriesDisplay);
+            view.render(controller.makeEntryHtml(obj), entriesDisplay);
         }
     }
 })()
     
-
-
-// LOGIC
 
 // initialize
 // get elements
@@ -90,7 +109,6 @@ const entriesDisplay = document.querySelector('.entries-display');
 const entriesForm = document.querySelector('.entries-form');
 const fab = document.querySelector('.fab');
 const logo = document.querySelector('.logo');
-const form = document.querySelector('form');
 
 // initialize entry page
 
@@ -102,13 +120,15 @@ for (let e of model.entries){
 
 // on fab click hide entries and display form
 fab.addEventListener('click', () => {
-    view.hide(entriesDisplay);
-    view.hide(fab);
-    view.show(entriesForm);
+    view.showForm();
 });
 
 // render form (do this here so only have to do it once)
 view.render(controller.makeFormHtml({}), entriesForm);
+
+// needs to be below the render function (can fix this by pulling this into view.init)
+const form = document.querySelector('form');
+
 
 // on submit add entry and display entries pages 
 form.addEventListener('submit', event => {
@@ -118,10 +138,7 @@ form.addEventListener('submit', event => {
     }
     controller.addEntry(data);
     event.preventDefault();
-
-    view.show(entriesDisplay);
-    view.show(fab);
-    view.hide(entriesForm);
+    view.showEntries();
 })
 
 
