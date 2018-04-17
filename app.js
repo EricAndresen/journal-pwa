@@ -1,5 +1,4 @@
 // TODO: Add Back button to form entry (how to handle routing?)
-// TODO: Make Name a link to the home page
 
 // Goal?: have no elements in main body
     // pull initiatization into view.init
@@ -11,6 +10,7 @@
 // TODO: when edit button is clicked open in form
 // TODO: External Database
 // TODO: NLP (tab on top)
+// TODO: test with very large numbers of entries
 // BUG: view.show makes fab render incorrectly (uses flex)
 
 
@@ -109,6 +109,9 @@ const entriesDisplay = document.querySelector('.entries-display');
 const entriesForm = document.querySelector('.entries-form');
 const fab = document.querySelector('.fab');
 const logo = document.querySelector('.logo');
+
+// on logo click return to entries
+logo.addEventListener('click', () => view.showEntries());
 
 // initialize entry page
 
