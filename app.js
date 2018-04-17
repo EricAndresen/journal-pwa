@@ -1,12 +1,14 @@
 // Goal?: have no elements in main body
     // pull initiatization into view.init
     
-// TODO: cardview for each entry
+// TODO: Make newest entry first
+    // add to top instead of bottom of entry div
 // TODO: when article is clicked show full entry with edit button
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: when edit button is clicked open in form
 // TODO: External Database
 // TODO: add markdown support for entries
+// TODO: add search (Implement using string.includes with a scoring system?, would regex be faster?)
 // TODO: NLP (tab on top)
 // TODO: Add service worker to make PWA / cache entries
 // TODO: test with very large numbers of entries (page reflow performance issues?)
@@ -29,7 +31,7 @@ const model = {
         },
         { 
             date: 1523793423939,
-            text: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat ipsa ad in cum beatae vero non culpa itaque id, tempore saepe nulla explicabo maiores molestiae debitis nostrum asperiores quo iure?"
+            text: "Lasdf ipsum dolor sit amet consectetur adipisicing elit. Placeat ipsa ad in cum beatae vero non culpa itaque id, tempore saepe nulla explicabo maiores molestiae debitis nostrum asperiores quo iure?"
         }
     ]
 }
@@ -48,7 +50,8 @@ const view = (() => {
 
     return {
         render(htmlString, targetDiv){
-            targetDiv.insertAdjacentHTML('beforeend', htmlString)
+            // this is too tightly coupled
+            targetDiv.insertAdjacentHTML('afterBegin' , htmlString)
         },
         showEntries(){
             show(entriesDisplay);
@@ -120,7 +123,7 @@ logo.addEventListener('click', () => view.showEntries());
 // initialize entry page
 
 // render each entry in order
-for (let e of model.entries){
+for (let e of model.entries.reverse()){
     const entryHtml = controller.makeEntryHtml(e);
     view.render(entryHtml, entriesDisplay);
 }
