@@ -1,11 +1,11 @@
 // Goal?: have no elements in main body
     // pull initiatization into view.init
 
-// TODO: Make index dynamic
 // TODO: when article is clicked show full entry with edit button
     // click on entry
     // hide entries
-    // get that object
+    // get that object by index
+    // render that object 
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: when edit button is clicked open in form
 // TODO: External Database
@@ -122,18 +122,29 @@ const logo = document.querySelector('.logo');
 // on logo click return to entries
 logo.addEventListener('click', () => view.showEntries());
 
+// listen on parent for click on child and return index
+// this is a bit fragile, is there a way to abstract this without slowing down with too many DOM interactions?
+entriesDisplay.addEventListener('click', (event) => {
+    let index = event.target.dataset.index
+    
+    // if index is undefined, get index from parent element
+    if (index === undefined) {
+        index = event.target.parentElement.dataset.index
+    }
+    
+    // if index is defined return it, else nothing
+    if (index != undefined) {
+        console.log(index)
+    }
+});
+
 // initialize entry page
 
-// render each entry 
-function renderEntries(){
-    for (let [index, entry] of model.entries.reverse().entries()){
-        const entryHtml = controller.makeEntryHtml(entry, index = index);
-        view.render(entryHtml, entriesDisplay);
-    }   
-}
-
-renderEntries();
-
+// render each entry with newest first
+for (let [index, entry] of model.entries.reverse().entries()){
+    const entryHtml = controller.makeEntryHtml(entry, index = index);
+    view.render(entryHtml, entriesDisplay);
+}   
 
 // on fab click hide entries and display form
 fab.addEventListener('click', () => {
