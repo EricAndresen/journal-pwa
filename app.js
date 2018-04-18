@@ -1,11 +1,7 @@
 // Goal?: have no elements in main body
     // pull initiatization into view.init
 
-// TODO: when article is clicked show full entry with edit button
-    // click on entry
-    // hide entries
-    // get that object by index
-    // render that object 
+// TODO: Add edit button to entryFocus
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: when edit button is clicked open in form
 // TODO: External Database
@@ -41,6 +37,7 @@ const model = {
 const view = (() => {
     const entriesDisplay = document.querySelector('.entries-display');
     const entriesForm = document.querySelector('.entries-form');
+    const entryFocus = document.querySelector('.entry-focus');
 
     function hide(element){
         element.style.display = "none";
@@ -58,16 +55,27 @@ const view = (() => {
         showEntries(){
             show(entriesDisplay);
             show(fab, method = "flex");
-            // need to decouple this more
-            this.hideForm();            
+            // Note: decouple this more?
+            this.hideForm();  
+            this.hideEntryFocus();          
         },
         hideEntries(){
             hide(entriesDisplay);
             hide(fab);
         },
+        showEntryFocus(element){
+            this.hideEntries();
+            const entry = controller.getEntryObject(element);
+            entryFocus.innerHTML = controller.makeEntryFocusHtml(entry);
+            show(entryFocus);
+        },
+        hideEntryFocus(){
+            hide(entryFocus);
+        },
         showForm(){
             show(entriesForm);  
             this.hideEntries();
+            this.hideEntryFocus()
         },   
         hideForm(){
             hide(entriesForm);  
@@ -91,18 +99,22 @@ const controller = (() => {
                           </div>`
             return htmlString
         },
-        // passing index this way to increase lookup speed. Is there a tight coupling trade-off?
+        // Note: passing index through html to increase lookup speed. Is there a tight coupling trade-off?
         getEntryObject(entryHtml){
             const index = entryHtml.dataset.index;
             return model.entries[index] //returns object
         },
         makeFormHtml(entryObject){
-            // TODO make data-index dynamic
             htmlString = `<form>
                              <textarea data-index = 0 name="entry-text" id="" cols="10" rows="40">${entryObject.text || ''}</textarea>
                              <button type="submit">Submit</button>
                          </form>`
             return htmlString
+        },
+        makeEntryFocusHtml(entryObject){
+            htmlString = `<p class="date">${renderDate(entryObject.date)}</p>
+                          <p class="text">${entryObject.text}</p>`;
+            return htmlString;
         },
         addEntry(obj){
             model.entries.push(obj);
@@ -113,6 +125,7 @@ const controller = (() => {
     
 
 // initialize
+
 // get elements
 const entriesDisplay = document.querySelector('.entries-display');
 const entriesForm = document.querySelector('.entries-form');
@@ -122,19 +135,17 @@ const logo = document.querySelector('.logo');
 // on logo click return to entries
 logo.addEventListener('click', () => view.showEntries());
 
-// listen on parent for click on child and return index
-// this is a bit fragile, is there a way to abstract this without slowing down with too many DOM interactions?
+// listen on parent for click on child 
+// Note: is there a way to abstract this without slowing down with too many DOM interactions?
 entriesDisplay.addEventListener('click', (event) => {
-    let index = event.target.dataset.index
+    let el = event.target
     
-    // if index is undefined, get index from parent element
-    if (index === undefined) {
-        index = event.target.parentElement.dataset.index
+    if (el.className != "entry") {
+        el = el.parentElement
     }
     
-    // if index is defined return it, else nothing
-    if (index != undefined) {
-        console.log(index)
+    if (el.className === "entry") {
+        view.showEntryFocus(el)
     }
 });
 
