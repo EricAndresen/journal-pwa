@@ -1,8 +1,7 @@
 // Goal?: have no elements in main body
     // pull initiatization into view.init
-    
-// TODO: Make newest entry first
-    // add to top instead of bottom of entry div
+
+// Make header appear on top of cards
 // TODO: when article is clicked show full entry with edit button
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: when edit button is clicked open in form
