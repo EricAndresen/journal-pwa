@@ -1,8 +1,11 @@
 // Goal?: have no elements in main body
     // pull initiatization into view.init
 
-// Make header appear on top of cards
+// TODO: Make index dynamic
 // TODO: when article is clicked show full entry with edit button
+    // click on entry
+    // hide entries
+    // get that object
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: when edit button is clicked open in form
 // TODO: External Database
@@ -79,10 +82,10 @@ const controller = (() => {
     }
 
     return{
-        makeEntryHtml(entryObject){
+        makeEntryHtml(entryObject, index = (model.entries.length - 1)){
             // TODO add parseDate function
             // TODO make data-index dynamic
-            htmlString = `<div data-index = 0 class="entry">
+            htmlString = `<div data-index = ${index} class="entry">
                              <p class="date">${renderDate(entryObject.date)}</p>
                              <p class="text">${entryObject.text}</p>
                           </div>`
@@ -121,11 +124,16 @@ logo.addEventListener('click', () => view.showEntries());
 
 // initialize entry page
 
-// render each entry in order
-for (let e of model.entries.reverse()){
-    const entryHtml = controller.makeEntryHtml(e);
-    view.render(entryHtml, entriesDisplay);
+// render each entry 
+function renderEntries(){
+    for (let [index, entry] of model.entries.reverse().entries()){
+        const entryHtml = controller.makeEntryHtml(entry, index = index);
+        view.render(entryHtml, entriesDisplay);
+    }   
 }
+
+renderEntries();
+
 
 // on fab click hide entries and display form
 fab.addEventListener('click', () => {
