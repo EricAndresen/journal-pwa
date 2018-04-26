@@ -2,6 +2,7 @@
     // pull initiatization into view.init
 
 // TODO: Add edit button to entryFocus
+// TODO: truncate display of entries by char number
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: when edit button is clicked open in form
 // TODO: External Database
@@ -38,6 +39,8 @@ const view = (() => {
     const entriesDisplay = document.querySelector('.entries-display');
     const entriesForm = document.querySelector('.entries-form');
     const entryFocus = document.querySelector('.entry-focus');
+    const fab = document.querySelector('.fab');
+    const logo = document.querySelector('.logo');
 
     function hide(element){
         element.style.display = "none";
@@ -47,7 +50,63 @@ const view = (() => {
         element.style.display = method;
     }
 
+    // initialize app
+    
+
     return {
+        init(){
+
+            // on logo click return to entries
+            logo.addEventListener('click', () => view.showEntries());
+    
+            console.log("initialized")
+            // listen on parent for click on child 
+            // Note: is there a way to abstract this without slowing down with too many DOM interactions?
+            entriesDisplay.addEventListener('click', (event) => {
+                let el = event.target
+                
+                // go to parent element if child
+                if (el.className != "entry") {
+                    el = el.parentElement
+                }
+                
+                if (el.className === "entry") {
+                    view.showEntryFocus(el)
+                }
+            });
+    
+            // initialize entry page
+    
+            // render each entry with newest first
+            for (let [index, entry] of model.entries.reverse().entries()){
+                const entryHtml = controller.makeEntryHtml(entry, index = index);
+                view.render(entryHtml, entriesDisplay);
+            }   
+    
+            // on fab click hide entries and display form
+            fab.addEventListener('click', () => {
+                view.showForm();
+            });
+    
+            // render form (do this here so only have to do it once)
+            view.render(controller.makeFormHtml({}), entriesForm);
+    
+            // needs to be below the render function (can fix this by pulling this into view.init)
+            const form = document.querySelector('form');
+    
+    
+            // on submit add entry, reset form, and display entries pages 
+            form.addEventListener('submit', event => {
+                const data = {
+                    date: Date.now(),
+                    text: event.target[0].value
+                }
+                controller.addEntry(data);
+                event.target[0].value = '';
+                event.preventDefault();
+                view.showEntries();
+            })
+        },
         render(htmlString, targetDiv){
             // this is too tightly coupled
             targetDiv.insertAdjacentHTML('afterBegin' , htmlString)
@@ -123,63 +182,8 @@ const controller = (() => {
     }
 })()
     
+view.init();
 
-// initialize
-
-// get elements
-const entriesDisplay = document.querySelector('.entries-display');
-const entriesForm = document.querySelector('.entries-form');
-const fab = document.querySelector('.fab');
-const logo = document.querySelector('.logo');
-
-// on logo click return to entries
-logo.addEventListener('click', () => view.showEntries());
-
-// listen on parent for click on child 
-// Note: is there a way to abstract this without slowing down with too many DOM interactions?
-entriesDisplay.addEventListener('click', (event) => {
-    let el = event.target
-    
-    if (el.className != "entry") {
-        el = el.parentElement
-    }
-    
-    if (el.className === "entry") {
-        view.showEntryFocus(el)
-    }
-});
-
-// initialize entry page
-
-// render each entry with newest first
-for (let [index, entry] of model.entries.reverse().entries()){
-    const entryHtml = controller.makeEntryHtml(entry, index = index);
-    view.render(entryHtml, entriesDisplay);
-}   
-
-// on fab click hide entries and display form
-fab.addEventListener('click', () => {
-    view.showForm();
-});
-
-// render form (do this here so only have to do it once)
-view.render(controller.makeFormHtml({}), entriesForm);
-
-// needs to be below the render function (can fix this by pulling this into view.init)
-const form = document.querySelector('form');
-
-
-// on submit add entry, reset form, and display entries pages 
-form.addEventListener('submit', event => {
-    const data = {
-        date: Date.now(),
-        text: event.target[0].value
-    }
-    controller.addEntry(data);
-    event.target[0].value = '';
-    event.preventDefault();
-    view.showEntries();
-})
 
 
 
