@@ -1,4 +1,7 @@
-// TODO: Add edit button to entryFocus
+// On button click open form with that pages data passed in
+    // Pass data to form
+    // on submit if index, then update that index, else add to the end
+    // Note: this might actually be easier to do once firebase is up and running (update, etc.)
 
 // TODO: truncate display of entries by char number
 // TODO: Add Back button to form entry (how to handle routing?)
@@ -77,31 +80,36 @@ const view = (() => {
                 const entryHtml = controller.makeEntryHtml(entry, index = index);
                 view.render(entryHtml, entriesDisplay);
             }   
-
-            // on fab click hide entries and display form
-            // get the object from the page and pass it to the
-            fabEdit.addEventListener('click', () => {
-                view.showForm();
-            });
     
             // render form (do this here so only have to do it once)
             view.render(controller.makeFormHtml({}), entriesForm);
     
             // needs to be below the render function (can fix this by pulling this into view.init)
             const form = document.querySelector('form');
+            const textArea = document.querySelector('textarea');
     
     
             // on submit add entry, reset form, and display entries pages 
             form.addEventListener('submit', event => {
+                event.preventDefault();
                 const data = {
                     date: Date.now(),
                     text: event.target[0].value
                 }
                 controller.addEntry(data);
-                event.target[0].value = '';
-                event.preventDefault();
+                textArea.innerHTML = '';
                 view.showEntries();
             })
+
+            // on fab click hide entries and display form
+            fabAdd.addEventListener('click', () => {
+                view.showForm();
+            });
+            
+            fabEdit.addEventListener('click', (event) => {
+                textArea.innerHTML = "Entry Content";
+                view.showForm();
+            });
         },
         render(htmlString, targetDiv){
             // this is too tightly coupled
@@ -121,7 +129,8 @@ const view = (() => {
         showEntryFocus(element){
             this.hideEntries();
             const entry = controller.getEntryObject(element);
-            entryFocus.innerHTML = controller.makeEntryFocusHtml(entry);
+            const index = element.dataset.index
+            entryFocus.innerHTML = controller.makeEntryFocusHtml(entry, index);
             show(entryFocus);
             hide(fabAdd);
             show(fabEdit, method = "flex");
@@ -142,6 +151,7 @@ const view = (() => {
 })()
 
 const controller = (() => {
+    const entriesDisplay = document.querySelector('.entries-display');
 
     function renderDate(dateInMs){
         return new Date(dateInMs).toDateString(); 
@@ -169,9 +179,11 @@ const controller = (() => {
                          </form>`
             return htmlString
         },
-        makeEntryFocusHtml(entryObject){
-            htmlString = `<p class="date">${renderDate(entryObject.date)}</p>
-                          <p class="text">${entryObject.text}</p>`;
+        makeEntryFocusHtml(entryObject, index){
+            htmlString = `<div data-index = ${index}>
+                            <p class="date">${renderDate(entryObject.date)}</p>
+                            <p class="text">${entryObject.text}</p>
+                          </div>`;
             return htmlString;
         },
         addEntry(obj){
