@@ -1,17 +1,15 @@
-// Goal?: have no elements in main body
-    // pull initiatization into view.init
-
 // TODO: Add edit button to entryFocus
+
 // TODO: truncate display of entries by char number
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: when edit button is clicked open in form
 // TODO: External Database
+// TODO: see https://firebase.google.com/docs/web/setup?authuser=0 to further abstract firebase config (use node)
 // TODO: add markdown support for entries
 // TODO: add search (Implement using string.includes with a scoring system?, would regex be faster?)
 // TODO: NLP (tab on top)
 // TODO: Add service worker to make PWA / cache entries
 // TODO: test with very large numbers of entries (page reflow performance issues?)
-// TODO: add material icon to fab
 
 
 const model = {
@@ -39,7 +37,8 @@ const view = (() => {
     const entriesDisplay = document.querySelector('.entries-display');
     const entriesForm = document.querySelector('.entries-form');
     const entryFocus = document.querySelector('.entry-focus');
-    const fab = document.querySelector('.fab');
+    const fabAdd = document.querySelector('.fab-add');
+    const fabEdit = document.querySelector('.fab-edit');
     const logo = document.querySelector('.logo');
 
     function hide(element){
@@ -50,18 +49,14 @@ const view = (() => {
         element.style.display = method;
     }
 
-    // initialize app
     
-
     return {
         init(){
 
             // on logo click return to entries
             logo.addEventListener('click', () => view.showEntries());
     
-            console.log("initialized")
             // listen on parent for click on child 
-            // Note: is there a way to abstract this without slowing down with too many DOM interactions?
             entriesDisplay.addEventListener('click', (event) => {
                 let el = event.target
                 
@@ -82,9 +77,10 @@ const view = (() => {
                 const entryHtml = controller.makeEntryHtml(entry, index = index);
                 view.render(entryHtml, entriesDisplay);
             }   
-    
+
             // on fab click hide entries and display form
-            fab.addEventListener('click', () => {
+            // get the object from the page and pass it to the
+            fabEdit.addEventListener('click', () => {
                 view.showForm();
             });
     
@@ -113,23 +109,26 @@ const view = (() => {
         },
         showEntries(){
             show(entriesDisplay);
-            show(fab, method = "flex");
+            show(fabAdd, method = "flex");
             // Note: decouple this more?
             this.hideForm();  
             this.hideEntryFocus();          
         },
         hideEntries(){
             hide(entriesDisplay);
-            hide(fab);
+            hide(fabAdd);
         },
         showEntryFocus(element){
             this.hideEntries();
             const entry = controller.getEntryObject(element);
             entryFocus.innerHTML = controller.makeEntryFocusHtml(entry);
             show(entryFocus);
+            hide(fabAdd);
+            show(fabEdit, method = "flex");
         },
         hideEntryFocus(){
             hide(entryFocus);
+            hide(fabEdit);
         },
         showForm(){
             show(entriesForm);  

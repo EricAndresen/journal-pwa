@@ -58,6 +58,10 @@ header {
     height: 60px;
 }
 
+.fab-edit{
+    display: none;
+}
+
 textarea {
     width: 100%;
     height: 100%;
