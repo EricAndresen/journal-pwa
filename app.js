@@ -1,7 +1,6 @@
 // Note: this app is storing state multiple places, refactor to have a single source of truth
 
 // On button click open form with that pages data passed in
-    // Pass data to form
     // on submit if index, then update that index, else add to the end
     // Note: this might actually be easier to do once firebase is up and running (update, etc.)
 
@@ -104,6 +103,7 @@ const view = (() => {
 
             // on fab click hide entries and display form
             fabAdd.addEventListener('click', () => {
+                controller.setCurrentEntryIndex(null)
                 view.showForm();
             });
             
