@@ -1,3 +1,5 @@
+// Note: this app is storing state multiple places, refactor to have a single source of truth
+
 // On button click open form with that pages data passed in
     // Pass data to form
     // on submit if index, then update that index, else add to the end
@@ -14,6 +16,7 @@
 
 
 const model = {
+    currentEntryIndex: null,
     entries : [
         { 
             date: 1523793423939,
@@ -53,7 +56,6 @@ const view = (() => {
     
     return {
         init(){
-
             // on logo click return to entries
             logo.addEventListener('click', () => view.showEntries());
     
@@ -67,7 +69,8 @@ const view = (() => {
                 }
                 
                 if (el.className === "entry") {
-                    view.showEntryFocus(el)
+                    controller.setCurrentEntryIndex(el)
+                    view.showEntryFocus()
                 }
             });
     
@@ -105,7 +108,6 @@ const view = (() => {
             });
             
             fabEdit.addEventListener('click', (event) => {
-                textArea.innerHTML = "Entry Content";
                 view.showForm();
             });
         },
@@ -124,11 +126,11 @@ const view = (() => {
             hide(entriesDisplay);
             hide(fabAdd);
         },
+        // TODO: split this up - doing to many things
         showEntryFocus(element){
             this.hideEntries();
-            const entry = controller.getEntryObject(element);
-            const index = element.dataset.index
-            entryFocus.innerHTML = controller.makeEntryFocusHtml(entry, index);
+            const entry = controller.getCurrentEntryObject();
+            entryFocus.innerHTML = controller.makeEntryFocusHtml(entry);
             show(entryFocus);
             hide(fabAdd);
             show(fabEdit, method = "flex");
@@ -156,29 +158,30 @@ const controller = (() => {
     }
 
     return{
-        makeEntryHtml(entryObject, index = (model.entries.length - 1)){
+        makeEntryHtml(entryObject, index = model.entries.length - 1){
             // TODO add parseDate function
-            // TODO make data-index dynamic
-            htmlString = `<div data-index = ${index} class="entry">
+            htmlString = `<div data-index=${index} class="entry">
                              <p class="date">${renderDate(entryObject.date)}</p>
                              <p class="text">${entryObject.text}</p>
                           </div>`
             return htmlString
         },
         // Note: passing index through html to increase lookup speed. Is there a tight coupling trade-off?
-        getEntryObject(entryHtml){
-            const index = entryHtml.dataset.index;
-            return model.entries[index] //returns object
+        setCurrentEntryIndex(elem) {
+            model.currentEntryIndex = elem.dataset.index
+        },
+        getCurrentEntryObject(){
+            return model.entries[model.currentEntryIndex] //returns object
         },
         makeFormHtml(entryObject){
             htmlString = `<form>
-                             <textarea data-index = 0 name="entry-text" id="" cols="10" rows="40">${entryObject.text || ''}</textarea>
+                             <textarea name="entry-text" id="" cols="10" rows="40">${entryObject.text || ''}</textarea>
                              <button type="submit">Submit</button>
                          </form>`
             return htmlString
         },
-        makeEntryFocusHtml(entryObject, index){
-            htmlString = `<div data-index = ${index}>
+        makeEntryFocusHtml(entryObject){
+            htmlString = `<div>
                             <p class="date">${renderDate(entryObject.date)}</p>
                             <p class="text">${entryObject.text}</p>
                           </div>`;
