@@ -108,6 +108,8 @@ const view = (() => {
             });
             
             fabEdit.addEventListener('click', (event) => {
+                // make this not talk to model
+                textArea.innerHTML = controller.getCurrentEntryObject().text
                 view.showForm();
             });
         },
