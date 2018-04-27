@@ -69,7 +69,7 @@ const view = (() => {
                 }
                 
                 if (el.className === "entry") {
-                    controller.setCurrentEntryIndex(el)
+                    controller.setCurrentEntryIndex(el.dataset.index)
                     view.showEntryFocus()
                 }
             });
@@ -167,8 +167,8 @@ const controller = (() => {
             return htmlString
         },
         // Note: passing index through html to increase lookup speed. Is there a tight coupling trade-off?
-        setCurrentEntryIndex(elem) {
-            model.currentEntryIndex = elem.dataset.index
+        setCurrentEntryIndex(index) {
+            model.currentEntryIndex = index;
         },
         getCurrentEntryObject(){
             return model.entries[model.currentEntryIndex] //returns object
