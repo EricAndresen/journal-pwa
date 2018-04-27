@@ -5,13 +5,11 @@
 
 // TODO: truncate display of entries by char number
 // TODO: Add Back button to form entry (how to handle routing?)
-// TODO: when edit button is clicked open in form
 // TODO: External Database
 // TODO: see https://firebase.google.com/docs/web/setup?authuser=0 to further abstract firebase config (use node)
 // TODO: add markdown support for entries
 // TODO: add search (Implement using string.includes with a scoring system?, would regex be faster?)
 // TODO: NLP (tab on top)
-// TODO: Add service worker to make PWA / cache entries
 // TODO: test with very large numbers of entries (page reflow performance issues?)
 
 
