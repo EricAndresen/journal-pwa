@@ -1,4 +1,4 @@
-// Note: this app is storing state multiple places, refactor to have a single source of truth
+// BUG: see controller.updateFormValue(). Trying to make form update with current object, accept when add button is pressed because its a new object 
 
 // On button click open form with that pages data passed in
     // on submit if index, then update that index, else add to the end
@@ -13,6 +13,17 @@
 // TODO: NLP (tab on top)
 // TODO: test with very large numbers of entries (page reflow performance issues?)
 
+
+const DOM = {
+    entriesDisplay : document.querySelector('.entries-display'),
+    entriesForm : document.querySelector('.entries-form'),
+    entryFocus : document.querySelector('.entry-focus'),
+    fabAdd : document.querySelector('.fab-add'),
+    fabEdit : document.querySelector('.fab-edit'),
+    logo : document.querySelector('.logo'),
+    form : document.querySelector('form'),
+    textArea : document.querySelector('textarea'),
+}
 
 const model = {
     currentEntryIndex: null,
@@ -37,12 +48,6 @@ const model = {
 }
 
 const view = (() => {
-    const entriesDisplay = document.querySelector('.entries-display');
-    const entriesForm = document.querySelector('.entries-form');
-    const entryFocus = document.querySelector('.entry-focus');
-    const fabAdd = document.querySelector('.fab-add');
-    const fabEdit = document.querySelector('.fab-edit');
-    const logo = document.querySelector('.logo');
 
     function hide(element){
         element.style.display = "none";
@@ -55,11 +60,11 @@ const view = (() => {
     
     return {
         init(){
-            // on logo click return to entries
-            logo.addEventListener('click', () => view.showEntries());
+            // on DOM.logo click return to entries
+            DOM.logo.addEventListener('click', () => view.showEntries());
     
             // listen on parent for click on child 
-            entriesDisplay.addEventListener('click', (event) => {
+            DOM.entriesDisplay.addEventListener('click', (event) => {
                 let el = event.target
                 
                 // go to parent element if child
@@ -78,38 +83,31 @@ const view = (() => {
             // render each entry with newest first
             for (let [index, entry] of model.entries.reverse().entries()){
                 const entryHtml = controller.makeEntryHtml(entry, index = index);
-                view.render(entryHtml, entriesDisplay);
-            }   
-    
-            // render form (do this here so only have to do it once)
-            view.render(controller.makeFormHtml({}), entriesForm);
-    
-            // needs to be below the render function (can fix this by pulling this into view.init)
-            const form = document.querySelector('form');
-            const textArea = document.querySelector('textarea');
+                view.render(entryHtml, DOM.entriesDisplay);
+            }  
     
     
             // on submit add entry, reset form, and display entries pages 
-            form.addEventListener('submit', event => {
+            DOM.form.addEventListener('submit', event => {
                 event.preventDefault();
                 const data = {
                     date: Date.now(),
                     text: event.target[0].value
                 }
                 controller.addEntry(data);
-                textArea.innerHTML = '';
+                DOM.textArea.innerHTML = '';
                 view.showEntries();
             })
 
             // on fab click hide entries and display form
-            fabAdd.addEventListener('click', () => {
+            DOM.fabAdd.addEventListener('click', () => {
+                console.log('add')
                 controller.setCurrentEntryIndex(null)
                 view.showForm();
             });
             
-            fabEdit.addEventListener('click', (event) => {
-                // make this not talk to model
-                textArea.innerHTML = controller.getCurrentEntryObject().text
+            DOM.fabEdit.addEventListener('click', (event) => {
+                console.log('edit')
                 view.showForm();
             });
         },
@@ -118,42 +116,42 @@ const view = (() => {
             targetDiv.insertAdjacentHTML('afterBegin' , htmlString)
         },
         showEntries(){
-            show(entriesDisplay);
-            show(fabAdd, method = "flex");
+            show(DOM.entriesDisplay);
+            show(DOM.fabAdd, method = "flex");
             // Note: decouple this more?
             this.hideForm();  
             this.hideEntryFocus();          
         },
         hideEntries(){
-            hide(entriesDisplay);
-            hide(fabAdd);
+            hide(DOM.entriesDisplay);
+            hide(DOM.fabAdd);
         },
         // TODO: split this up - doing to many things
         showEntryFocus(element){
             this.hideEntries();
             const entry = controller.getCurrentEntryObject();
-            entryFocus.innerHTML = controller.makeEntryFocusHtml(entry);
-            show(entryFocus);
-            hide(fabAdd);
-            show(fabEdit, method = "flex");
+            DOM.entryFocus.innerHTML = controller.makeEntryFocusHtml(entry);
+            show(DOM.entryFocus);
+            hide(DOM.fabAdd);
+            show(DOM.fabEdit, method = "flex");
         },
         hideEntryFocus(){
-            hide(entryFocus);
-            hide(fabEdit);
+            hide(DOM.entryFocus);
+            hide(DOM.fabEdit);
         },
         showForm(){
-            show(entriesForm);  
+            controller.updateFormValue();
+            show(DOM.entriesForm);  
             this.hideEntries();
             this.hideEntryFocus()
         },   
         hideForm(){
-            hide(entriesForm);  
+            hide(DOM.entriesForm);  
         }   
     }
 })()
 
 const controller = (() => {
-    const entriesDisplay = document.querySelector('.entries-display');
 
     function renderDate(dateInMs){
         return new Date(dateInMs).toDateString(); 
@@ -173,14 +171,12 @@ const controller = (() => {
             model.currentEntryIndex = index;
         },
         getCurrentEntryObject(){
-            return model.entries[model.currentEntryIndex] //returns object
-        },
-        makeFormHtml(entryObject){
-            htmlString = `<form>
-                             <textarea name="entry-text" id="" cols="10" rows="40">${entryObject.text || ''}</textarea>
-                             <button type="submit">Submit</button>
-                         </form>`
-            return htmlString
+            const index = model.currentEntryIndex
+            if (index){
+                return model.entries[model.currentEntryIndex] //returns object
+            } else {
+                return ''
+            }
         },
         makeEntryFocusHtml(entryObject){
             htmlString = `<div>
@@ -191,7 +187,10 @@ const controller = (() => {
         },
         addEntry(obj){
             model.entries.push(obj);
-            view.render(controller.makeEntryHtml(obj), entriesDisplay);
+            view.render(controller.makeEntryHtml(obj), DOM.entriesDisplay);
+        },
+        updateFormValue(){
+            DOM.textArea.value = controller.getCurrentEntryObject().text || ''
         }
     }
 })()
