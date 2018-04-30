@@ -1,14 +1,15 @@
-// BUG: see controller.updateFormValue(). Trying to make form update with current object, accept when add button is pressed because its a new object 
-
 // On button click open form with that pages data passed in
     // on submit if index, then update that index, else add to the end
-    // Note: this might actually be easier to do once firebase is up and running (update, etc.)
+    // recompose submit
+       
 
-// TODO: truncate display of entries by char number
+// TODO: truncate display of entries by char number?
 // TODO: Add Back button to form entry (how to handle routing?)
 // TODO: External Database
 // TODO: see https://firebase.google.com/docs/web/setup?authuser=0 to further abstract firebase config (use node)
+    // There is a case to be made for not having an external database if render speed is the goal to be measured here
 // TODO: add markdown support for entries
+    // not necessary for basic rendering speed test?
 // TODO: add search (Implement using string.includes with a scoring system?, would regex be faster?)
 // TODO: NLP (tab on top)
 // TODO: test with very large numbers of entries (page reflow performance issues?)
@@ -94,8 +95,8 @@ const view = (() => {
                     date: Date.now(),
                     text: event.target[0].value
                 }
-                controller.addEntry(data);
-                DOM.textArea.innerHTML = '';
+                // controller.addEntry(data);
+                controller.handleSubmit(data);
                 view.showEntries();
             })
 
@@ -157,6 +158,16 @@ const controller = (() => {
         return new Date(dateInMs).toDateString(); 
     }
 
+    function addEntry(obj){
+        model.entries.push(obj);
+        view.render(controller.makeEntryHtml(obj), DOM.entriesDisplay);
+    }
+
+    function updateEntry(index, text) {
+        model.entries[index].text = text
+        // need to rerender
+    }
+
     return{
         makeEntryHtml(entryObject, index = model.entries.length - 1){
             // TODO add parseDate function
@@ -185,9 +196,14 @@ const controller = (() => {
                           </div>`;
             return htmlString;
         },
-        addEntry(obj){
-            model.entries.push(obj);
-            view.render(controller.makeEntryHtml(obj), DOM.entriesDisplay);
+        handleSubmit(obj){
+            const index = model.currentEntryIndex;
+            if (index){
+                // create this
+                updateEntry(index, obj.text)
+            } else {
+                addEntry(obj)
+            }
         },
         updateFormValue(){
             DOM.textArea.value = controller.getCurrentEntryObject().text || ''
